@@ -3,11 +3,14 @@ const int buttonPin = 2; // the number of the pushbutton pin
 
 // variables will change:
 int n = 0; // variable for reading the pushbutton status
-int pin8 = 8;
-int pin12 = 12;
-int pin2 = 2;
-int pin4 = 4;
-int pin7 = 7;
+int firstGreen = 13;
+int firstRed = 8;
+int firstYellow = 12;
+int secondRed = 2;
+int secondYellow = 4;
+int secondGreen = 7;
+
+long timer = 0;
 
 void setup()
 {
@@ -16,29 +19,16 @@ void setup()
   Serial.print("\n\ndigite um dado");
   Serial.println();
 
-  pinMode(LED_BUILTIN, OUTPUT);
-  pinMode(pin12, OUTPUT);
-  pinMode(pin8, OUTPUT);
-  pinMode(pin4, OUTPUT);
-  pinMode(pin2, OUTPUT);
-  pinMode(pin7, OUTPUT);
-
-
-  
-}
-
-void resetLED(){
-  digitalWrite(LED_BUILTIN, LOW);
-  digitalWrite(pin8, LOW);
-  digitalWrite(pin4, LOW);
-  digitalWrite(pin2, LOW);
-  digitalWrite(pin12, LOW);
-  digitalWrite(pin7, LOW);
+  pinMode(firstGreen, OUTPUT);
+  pinMode(firstYellow, OUTPUT);
+  pinMode(firstRed, OUTPUT);
+  pinMode(secondYellow, OUTPUT);
+  pinMode(secondRed, OUTPUT);
+  pinMode(secondGreen, OUTPUT);
 }
 
 void loop()
-{
-    
+{ 
   if (Serial.available() > 0)
   {
     
@@ -48,26 +38,50 @@ void loop()
     {
     case 115:
 
-      while (true){
-        digitalWrite(pin12, HIGH);
-        digitalWrite(LED_BUILTIN, HIGH);
-        delay(6000);
-        digitalWrite(pin12, LOW);
+		timer = millis();
+		
+		digitalWrite(firstRed, HIGH);
+		digitalWrite(secondRed, HIGH);
+	  
+		while (true){
+		
+		//first cycle
+		
+		if ((millis()-timer)==1000){
+			digitalWrite(firstRed, LOW);
+			digitalWrite(firstGreen, HIGH);
+		}
+		
+		if ((millis()-timer)==7000){
+			digitalWrite(firstGreen, LOW);
+			digitalWrite(firstYellow, HIGH);
+		}
+		
+		if ((millis()-timer)==13000){
+			digitalWrite(firstRed, HIGH);
+			digitalWrite(firstYellow, LOW);
+		}
+		
+		
+		
+		//second cycle
+		
+		if ((millis()-timer)==14000){
+			digitalWrite(secondRed, LOW);
+			digitalWrite(secondGreen, HIGH);
+		}
+		
+		if ((millis()-timer)==20000){
+			digitalWrite(secondGreen, LOW);
+			digitalWrite(secondYellow, HIGH);
+		}
+		
+		if ((millis()-timer)==24000){
+			digitalWrite(secondRed, HIGH);
+			digitalWrite(secondYellow, LOW);
+			timer = millis();
+		}
 
-      
-        digitalWrite(pin8, HIGH);
-        delay(3000);
-        resetLED();
-      
-        digitalWrite(pin7, HIGH);
-        digitalWrite(pin4, HIGH);
-        delay(6000);
-        digitalWrite(pin4, LOW);
-
-
-        digitalWrite(pin2, HIGH);
-        delay(3000);
-        resetLED();
       }
 
     case 114:
@@ -77,15 +91,14 @@ void loop()
           digitalWrite(randomValue,HIGH);
           int randomDelay = random(200,400);
           delay(randomDelay); 
-          resetLED();
         }
       break;
 
-     case 10:
+    case 10:
       break;
      
-     default:
-      resetLED();
+    default:
+		break;
      }
 
     Serial.print("\n\nValor digitado: ");
